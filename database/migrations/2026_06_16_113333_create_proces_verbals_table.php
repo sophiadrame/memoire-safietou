@@ -12,9 +12,9 @@ return new class extends Migration
             $table->id();
             $table->foreignId('soutenance_id')->constrained('soutenances')->onDelete('cascade');
             $table->decimal('note', 4, 2)->nullable();
-            $table->enum('mention', ['Passable', 'Assez Bien', 'Bien', 'Très Bien'])->nullable();
+            $table->string('mention')->nullable();
             $table->text('appreciation')->nullable();
-            $table->enum('decision', ['Admis', 'Ajourné', 'Admis avec réserves'])->default('Admis');
+            $table->string('decision')->default('Admis');
             $table->date('date_pv');
             $table->timestamps();
         });

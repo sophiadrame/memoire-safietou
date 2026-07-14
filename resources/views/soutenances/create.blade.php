@@ -1,75 +1,99 @@
 @extends('layouts.app')
+@section('title', 'Nouvelle soutenance')
 
 @section('content')
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h2><i class="bi bi-plus-circle text-primary"></i> Planifier une Soutenance</h2>
-    <a href="{{ route('soutenances.index') }}" class="btn btn-outline-secondary">
-        <i class="bi bi-arrow-left"></i> Retour
-    </a>
-</div>
+<div style="max-width:700px;">
 
-<div class="card">
-    <div class="card-body p-4">
-        <form action="{{ route('soutenances.store') }}" method="POST">
+    <a href="{{ route('soutenances.index') }}"
+       style="display:inline-flex; align-items:center; gap:8px; background:#f8fafc; color:#475569; border:1px solid #e2e8f0; border-radius:10px; padding:8px 16px; font-size:13px; font-weight:500; text-decoration:none; margin-bottom:20px;">
+        <i class="fa-solid fa-arrow-left"></i> Retour
+    </a>
+
+    <div style="background:#fff; border-radius:16px; border:1px solid #f1f5f9; box-shadow:0 1px 3px rgba(0,0,0,.04); padding:28px;">
+
+        <h2 style="font-family:'Syne',sans-serif; font-weight:700; color:#1e293b; font-size:17px; margin:0 0 20px; padding-bottom:16px; border-bottom:1px solid #f1f5f9;">
+            <i class="fa-solid fa-calendar-plus" style="color:#1e40af; margin-right:8px;"></i>Planifier une soutenance
+        </h2>
+
+        <form action="{{ route('soutenances.store') }}" method="POST" style="display:flex; flex-direction:column; gap:18px;">
             @csrf
-            <div class="row g-3">
-                <div class="col-md-6">
-                    <label class="form-label fw-bold">Nom de l'étudiant</label>
-                    <input type="text" name="etudiant_nom" class="form-control @error('etudiant_nom') is-invalid @enderror"
-                           value="{{ old('etudiant_nom') }}" placeholder="Ex: DRAMÉ">
-                    @error('etudiant_nom') <div class="invalid-feedback">{{ $message }}</div> @enderror
+
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+                <div>
+                    <label style="display:block; font-size:12px; font-weight:500; color:#64748b; margin-bottom:6px;">Nom de l'étudiant <span style="color:#dc2626;">*</span></label>
+                    <input type="text" name="etudiant_nom" value="{{ old('etudiant_nom') }}" required
+                           placeholder="Nom"
+                           style="width:100%; padding:10px 14px; border:1px solid #e2e8f0; border-radius:10px; font-size:14px; outline:none; box-sizing:border-box;">
                 </div>
-                <div class="col-md-6">
-                    <label class="form-label fw-bold">Prénom de l'étudiant</label>
-                    <input type="text" name="etudiant_prenom" class="form-control @error('etudiant_prenom') is-invalid @enderror"
-                           value="{{ old('etudiant_prenom') }}" placeholder="Ex: Safietou">
-                    @error('etudiant_prenom') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                <div>
+                    <label style="display:block; font-size:12px; font-weight:500; color:#64748b; margin-bottom:6px;">Prénom <span style="color:#dc2626;">*</span></label>
+                    <input type="text" name="etudiant_prenom" value="{{ old('etudiant_prenom') }}" required
+                           placeholder="Prénom"
+                           style="width:100%; padding:10px 14px; border:1px solid #e2e8f0; border-radius:10px; font-size:14px; outline:none; box-sizing:border-box;">
                 </div>
-                <div class="col-md-12">
-                    <label class="form-label fw-bold">Titre du mémoire</label>
-                    <input type="text" name="titre_memoire" class="form-control @error('titre_memoire') is-invalid @enderror"
-                           value="{{ old('titre_memoire') }}" placeholder="Ex: Conception d'une application web...">
-                    @error('titre_memoire') <div class="invalid-feedback">{{ $message }}</div> @enderror
+            </div>
+
+            <div>
+                <label style="display:block; font-size:12px; font-weight:500; color:#64748b; margin-bottom:6px;">Compte étudiant (optionnel)</label>
+                <select name="etudiant_id"
+                        style="width:100%; padding:10px 14px; border:1px solid #e2e8f0; border-radius:10px; font-size:14px; outline:none; box-sizing:border-box; color:#475569;">
+                    <option value="">Sélectionner un étudiant inscrit...</option>
+                    @foreach($etudiants as $e)
+                    <option value="{{ $e->id }}" {{ old('etudiant_id') == $e->id ? 'selected' : '' }}>{{ $e->name }}</option>
+                    @endforeach
+                </select>
+            </div>
+
+            <div>
+                <label style="display:block; font-size:12px; font-weight:500; color:#64748b; margin-bottom:6px;">Titre du mémoire <span style="color:#dc2626;">*</span></label>
+                <input type="text" name="titre_memoire" value="{{ old('titre_memoire') }}" required
+                       placeholder="Titre complet du mémoire"
+                       style="width:100%; padding:10px 14px; border:1px solid #e2e8f0; border-radius:10px; font-size:14px; outline:none; box-sizing:border-box;">
+            </div>
+
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+                <div>
+                    <label style="display:block; font-size:12px; font-weight:500; color:#64748b; margin-bottom:6px;">Filière <span style="color:#dc2626;">*</span></label>
+                    <input type="text" name="filiere" value="{{ old('filiere') }}" required
+                           placeholder="Ex: L3 Génie Logiciel"
+                           style="width:100%; padding:10px 14px; border:1px solid #e2e8f0; border-radius:10px; font-size:14px; outline:none; box-sizing:border-box;">
                 </div>
-                <div class="col-md-4">
-                    <label class="form-label fw-bold">Filière</label>
-                    <select name="filiere" class="form-select @error('filiere') is-invalid @enderror">
-                        <option value="">-- Choisir --</option>
-                        <option value="Génie Logiciel" {{ old('filiere') == 'Génie Logiciel' ? 'selected' : '' }}>Génie Logiciel</option>
-                        <option value="Réseaux & Télécoms" {{ old('filiere') == 'Réseaux & Télécoms' ? 'selected' : '' }}>Réseaux & Télécoms</option>
-                        <option value="Systèmes d'Information" {{ old('filiere') == "Systèmes d'Information" ? 'selected' : '' }}>Systèmes d'Information</option>
-                    </select>
-                    @error('filiere') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                <div>
+                    <label style="display:block; font-size:12px; font-weight:500; color:#64748b; margin-bottom:6px;">Salle <span style="color:#dc2626;">*</span></label>
+                    <input type="text" name="salle" value="{{ old('salle') }}" required
+                           placeholder="Ex: Salle A41"
+                           style="width:100%; padding:10px 14px; border:1px solid #e2e8f0; border-radius:10px; font-size:14px; outline:none; box-sizing:border-box;">
                 </div>
-                <div class="col-md-4">
-                    <label class="form-label fw-bold">Date de soutenance</label>
-                    <input type="date" name="date_soutenance" class="form-control @error('date_soutenance') is-invalid @enderror"
-                           value="{{ old('date_soutenance') }}">
-                    @error('date_soutenance') <div class="invalid-feedback">{{ $message }}</div> @enderror
+            </div>
+
+            <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:16px;">
+                <div>
+                    <label style="display:block; font-size:12px; font-weight:500; color:#64748b; margin-bottom:6px;">Date <span style="color:#dc2626;">*</span></label>
+                    <input type="date" name="date_soutenance" value="{{ old('date_soutenance') }}" required
+                           min="{{ date('Y-m-d', strtotime('+1 day')) }}"
+                           style="width:100%; padding:10px 14px; border:1px solid #e2e8f0; border-radius:10px; font-size:14px; outline:none; box-sizing:border-box;">
                 </div>
-                <div class="col-md-4">
-                    <label class="form-label fw-bold">Salle</label>
-                    <input type="text" name="salle" class="form-control @error('salle') is-invalid @enderror"
-                           value="{{ old('salle') }}" placeholder="Ex: Salle A1">
-                    @error('salle') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                <div>
+                    <label style="display:block; font-size:12px; font-weight:500; color:#64748b; margin-bottom:6px;">Heure début <span style="color:#dc2626;">*</span></label>
+                    <input type="time" name="heure_debut" value="{{ old('heure_debut') }}" required
+                           style="width:100%; padding:10px 14px; border:1px solid #e2e8f0; border-radius:10px; font-size:14px; outline:none; box-sizing:border-box;">
                 </div>
-                <div class="col-md-6">
-                    <label class="form-label fw-bold">Heure de début</label>
-                    <input type="time" name="heure_debut" class="form-control @error('heure_debut') is-invalid @enderror"
-                           value="{{ old('heure_debut') }}">
-                    @error('heure_debut') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                <div>
+                    <label style="display:block; font-size:12px; font-weight:500; color:#64748b; margin-bottom:6px;">Heure fin <span style="color:#dc2626;">*</span></label>
+                    <input type="time" name="heure_fin" value="{{ old('heure_fin') }}" required
+                           style="width:100%; padding:10px 14px; border:1px solid #e2e8f0; border-radius:10px; font-size:14px; outline:none; box-sizing:border-box;">
                 </div>
-                <div class="col-md-6">
-                    <label class="form-label fw-bold">Heure de fin</label>
-                    <input type="time" name="heure_fin" class="form-control @error('heure_fin') is-invalid @enderror"
-                           value="{{ old('heure_fin') }}">
-                    @error('heure_fin') <div class="invalid-feedback">{{ $message }}</div> @enderror
-                </div>
-                <div class="col-12 mt-2">
-                    <button type="submit" class="btn btn-primary px-5">
-                        <i class="bi bi-check-lg"></i> Enregistrer
-                    </button>
-                </div>
+            </div>
+
+            <div style="display:flex; justify-content:flex-end; gap:10px; padding-top:16px; border-top:1px solid #f1f5f9;">
+                <a href="{{ route('soutenances.index') }}"
+                   style="background:#f8fafc; color:#475569; border:1px solid #e2e8f0; border-radius:10px; padding:10px 20px; font-size:13px; font-weight:500; text-decoration:none;">
+                    Annuler
+                </a>
+                <button type="submit"
+                        style="background:#1e40af; color:#fff; border:none; border-radius:10px; padding:10px 20px; font-size:13px; font-weight:500; cursor:pointer; display:inline-flex; align-items:center; gap:8px;">
+                    <i class="fa-solid fa-calendar-plus"></i> Planifier
+                </button>
             </div>
         </form>
     </div>

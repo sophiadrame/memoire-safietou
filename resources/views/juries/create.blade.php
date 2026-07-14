@@ -1,75 +1,99 @@
 @extends('layouts.app')
+@section('title', 'Ajouter un membre du jury')
 
 @section('content')
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h2><i class="bi bi-person-plus text-primary"></i> Ajouter un membre du jury</h2>
-    <a href="{{ route('juries.index') }}" class="btn btn-outline-secondary">
-        <i class="bi bi-arrow-left"></i> Retour
-    </a>
-</div>
+<div style="max-width:700px;">
 
-<div class="card">
-    <div class="card-body p-4">
-        <form action="{{ route('juries.store') }}" method="POST">
+    <a href="{{ route('juries.index') }}"
+       style="display:inline-flex; align-items:center; gap:8px; background:#f8fafc; color:#475569; border:1px solid #e2e8f0; border-radius:10px; padding:8px 16px; font-size:13px; font-weight:500; text-decoration:none; margin-bottom:20px;">
+        <i class="fa-solid fa-arrow-left"></i> Retour
+    </a>
+
+    <div style="background:#fff; border-radius:16px; border:1px solid #f1f5f9; box-shadow:0 1px 3px rgba(0,0,0,.04); padding:28px;">
+
+        <h2 style="font-family:'Syne',sans-serif; font-weight:700; color:#1e293b; font-size:17px; margin:0 0 20px; padding-bottom:16px; border-bottom:1px solid #f1f5f9;">
+            <i class="fa-solid fa-person-chalkboard" style="color:#1e40af; margin-right:8px;"></i>Ajouter un membre du jury
+        </h2>
+
+        <form action="{{ route('juries.store') }}" method="POST" style="display:flex; flex-direction:column; gap:18px;">
             @csrf
-            <div class="row g-3">
-                <div class="col-md-12">
-                    <label class="form-label fw-bold">Soutenance concernée</label>
-                    <select name="soutenance_id" class="form-select @error('soutenance_id') is-invalid @enderror">
-                        <option value="">-- Choisir une soutenance --</option>
-                        @foreach($soutenances as $s)
-                            <option value="{{ $s->id }}" {{ old('soutenance_id') == $s->id ? 'selected' : '' }}>
-                                {{ $s->etudiant_prenom }} {{ $s->etudiant_nom }} — {{ $s->titre_memoire }} ({{ \Carbon\Carbon::parse($s->date_soutenance)->format('d/m/Y') }})
-                            </option>
-                        @endforeach
-                    </select>
-                    @error('soutenance_id') <div class="invalid-feedback">{{ $message }}</div> @enderror
+
+            <div>
+                <label style="display:block; font-size:12px; font-weight:500; color:#64748b; margin-bottom:6px;">Soutenance concernée <span style="color:#dc2626;">*</span></label>
+                <select name="soutenance_id" required
+                        style="width:100%; padding:10px 14px; border:1px solid #e2e8f0; border-radius:10px; font-size:14px; outline:none; box-sizing:border-box; color:#475569;">
+                    <option value="">Sélectionner une soutenance...</option>
+                    @foreach($soutenances as $s)
+                    <option value="{{ $s->id }}" {{ old('soutenance_id') == $s->id ? 'selected' : '' }}>
+                        {{ $s->etudiant_prenom }} {{ $s->etudiant_nom }} — {{ \Carbon\Carbon::parse($s->date_soutenance)->format('d/m/Y') }}
+                    </option>
+                    @endforeach
+                </select>
+            </div>
+
+            <div>
+                <label style="display:block; font-size:12px; font-weight:500; color:#64748b; margin-bottom:6px;">Enseignant inscrit (optionnel)</label>
+                <select name="user_id"
+                        style="width:100%; padding:10px 14px; border:1px solid #e2e8f0; border-radius:10px; font-size:14px; outline:none; box-sizing:border-box; color:#475569;">
+                    <option value="">Sélectionner un enseignant...</option>
+                    @foreach($enseignants as $e)
+                    <option value="{{ $e->id }}" {{ old('user_id') == $e->id ? 'selected' : '' }}>{{ $e->name }}</option>
+                    @endforeach
+                </select>
+            </div>
+
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+                <div>
+                    <label style="display:block; font-size:12px; font-weight:500; color:#64748b; margin-bottom:6px;">Prénom <span style="color:#dc2626;">*</span></label>
+                    <input type="text" name="prenom" value="{{ old('prenom') }}" required
+                           style="width:100%; padding:10px 14px; border:1px solid #e2e8f0; border-radius:10px; font-size:14px; outline:none; box-sizing:border-box;">
                 </div>
-                <div class="col-md-6">
-                    <label class="form-label fw-bold">Nom</label>
-                    <input type="text" name="nom" class="form-control @error('nom') is-invalid @enderror"
-                           value="{{ old('nom') }}" placeholder="Ex: THIOYE">
-                    @error('nom') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                <div>
+                    <label style="display:block; font-size:12px; font-weight:500; color:#64748b; margin-bottom:6px;">Nom <span style="color:#dc2626;">*</span></label>
+                    <input type="text" name="nom" value="{{ old('nom') }}" required
+                           style="width:100%; padding:10px 14px; border:1px solid #e2e8f0; border-radius:10px; font-size:14px; outline:none; box-sizing:border-box;">
                 </div>
-                <div class="col-md-6">
-                    <label class="form-label fw-bold">Prénom</label>
-                    <input type="text" name="prenom" class="form-control @error('prenom') is-invalid @enderror"
-                           value="{{ old('prenom') }}" placeholder="Ex: Mactar">
-                    @error('prenom') <div class="invalid-feedback">{{ $message }}</div> @enderror
+            </div>
+
+            <div>
+                <label style="display:block; font-size:12px; font-weight:500; color:#64748b; margin-bottom:6px;">Rôle <span style="color:#dc2626;">*</span></label>
+                <select name="role" required
+                        style="width:100%; padding:10px 14px; border:1px solid #e2e8f0; border-radius:10px; font-size:14px; outline:none; box-sizing:border-box; color:#475569;">
+                    @foreach(['président','rapporteur','examinateur'] as $r)
+                    <option value="{{ $r }}" {{ old('role') === $r ? 'selected' : '' }}>{{ ucfirst($r) }}</option>
+                    @endforeach
+                </select>
+            </div>
+
+            <div>
+                <label style="display:block; font-size:12px; font-weight:500; color:#64748b; margin-bottom:6px;">Grade</label>
+                <input type="text" name="grade" value="{{ old('grade') }}"
+                       placeholder="Professeur, Maître de conférences..."
+                       style="width:100%; padding:10px 14px; border:1px solid #e2e8f0; border-radius:10px; font-size:14px; outline:none; box-sizing:border-box;">
+            </div>
+
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+                <div>
+                    <label style="display:block; font-size:12px; font-weight:500; color:#64748b; margin-bottom:6px;">Email</label>
+                    <input type="email" name="email" value="{{ old('email') }}"
+                           style="width:100%; padding:10px 14px; border:1px solid #e2e8f0; border-radius:10px; font-size:14px; outline:none; box-sizing:border-box;">
                 </div>
-                <div class="col-md-6">
-                    <label class="form-label fw-bold">Grade / Titre</label>
-                    <input type="text" name="grade" class="form-control @error('grade') is-invalid @enderror"
-                           value="{{ old('grade') }}" placeholder="Ex: Développeur Senior, Dr, Prof">
-                    @error('grade') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                <div>
+                    <label style="display:block; font-size:12px; font-weight:500; color:#64748b; margin-bottom:6px;">Téléphone</label>
+                    <input type="text" name="telephone" value="{{ old('telephone') }}"
+                           style="width:100%; padding:10px 14px; border:1px solid #e2e8f0; border-radius:10px; font-size:14px; outline:none; box-sizing:border-box;">
                 </div>
-                <div class="col-md-6">
-                    <label class="form-label fw-bold">Rôle dans le jury</label>
-                    <select name="role" class="form-select @error('role') is-invalid @enderror">
-                        <option value="">-- Choisir un rôle --</option>
-                        <option value="président" {{ old('role') == 'président' ? 'selected' : '' }}>Président</option>
-                        <option value="rapporteur" {{ old('role') == 'rapporteur' ? 'selected' : '' }}>Rapporteur</option>
-                        <option value="examinateur" {{ old('role') == 'examinateur' ? 'selected' : '' }}>Examinateur</option>
-                    </select>
-                    @error('role') <div class="invalid-feedback">{{ $message }}</div> @enderror
-                </div>
-                <div class="col-md-6">
-                    <label class="form-label fw-bold">Email <span class="text-muted">(optionnel)</span></label>
-                    <input type="email" name="email" class="form-control @error('email') is-invalid @enderror"
-                           value="{{ old('email') }}" placeholder="Ex: mactar@isi.sn">
-                    @error('email') <div class="invalid-feedback">{{ $message }}</div> @enderror
-                </div>
-                <div class="col-md-6">
-                    <label class="form-label fw-bold">Téléphone <span class="text-muted">(optionnel)</span></label>
-                    <input type="text" name="telephone" class="form-control @error('telephone') is-invalid @enderror"
-                           value="{{ old('telephone') }}" placeholder="Ex: 77 000 00 00">
-                    @error('telephone') <div class="invalid-feedback">{{ $message }}</div> @enderror
-                </div>
-                <div class="col-12 mt-2">
-                    <button type="submit" class="btn btn-primary px-5">
-                        <i class="bi bi-check-lg"></i> Enregistrer
-                    </button>
-                </div>
+            </div>
+
+            <div style="display:flex; justify-content:flex-end; gap:10px; padding-top:16px; border-top:1px solid #f1f5f9;">
+                <a href="{{ route('juries.index') }}"
+                   style="background:#f8fafc; color:#475569; border:1px solid #e2e8f0; border-radius:10px; padding:10px 20px; font-size:13px; font-weight:500; text-decoration:none;">
+                    Annuler
+                </a>
+                <button type="submit"
+                        style="background:#1e40af; color:#fff; border:none; border-radius:10px; padding:10px 20px; font-size:13px; font-weight:500; cursor:pointer; display:inline-flex; align-items:center; gap:8px;">
+                    <i class="fa-solid fa-plus"></i> Ajouter
+                </button>
             </div>
         </form>
     </div>

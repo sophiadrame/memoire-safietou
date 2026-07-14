@@ -10,6 +10,7 @@ class Soutenance extends Model
     use HasFactory;
 
     protected $fillable = [
+        'etudiant_id',
         'titre_memoire',
         'etudiant_nom',
         'etudiant_prenom',
@@ -21,6 +22,11 @@ class Soutenance extends Model
         'statut',
     ];
 
+    public function etudiant()
+    {
+        return $this->belongsTo(User::class, 'etudiant_id');
+    }
+
     public function juries()
     {
         return $this->hasMany(Jury::class);
@@ -28,11 +34,11 @@ class Soutenance extends Model
 
     public function procesVerbal()
     {
-    return $this->hasOne(ProcesVerbal::class);
+        return $this->hasOne(ProcesVerbal::class);
     }
 
     public function archives()
     {
-    return $this->hasMany(Archive::class);
+        return $this->hasMany(Archive::class);
     }
 }

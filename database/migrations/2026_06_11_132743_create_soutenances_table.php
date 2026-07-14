@@ -18,8 +18,7 @@ return new class extends Migration
             $table->time('heure_debut');
             $table->time('heure_fin');
             $table->string('salle');
-            $table->enum('statut', ['planifiée', 'en cours', 'terminée', 'annulée'])
-                  ->default('planifiée');
+            $table->string('statut')->default('planifiée');
             $table->timestamps();
         });
     }

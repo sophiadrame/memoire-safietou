@@ -11,6 +11,7 @@ class Jury extends Model
 
     protected $fillable = [
         'soutenance_id',
+        'user_id',
         'nom',
         'prenom',
         'email',
@@ -22,5 +23,10 @@ class Jury extends Model
     public function soutenance()
     {
         return $this->belongsTo(Soutenance::class);
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 }

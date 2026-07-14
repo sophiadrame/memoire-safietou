@@ -1,153 +1,109 @@
 @extends('layouts.app')
+@section('title', 'Mon Profil')
 
 @section('content')
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h2><i class="bi bi-person-circle text-primary"></i> Mon Profil</h2>
-</div>
-
-<div class="row g-3">
+<div style="max-width:700px; display:flex; flex-direction:column; gap:20px;">
 
     {{-- Informations du profil --}}
-    <div class="col-md-6">
-        <div class="card">
-            <div class="card-body p-4">
-                <h5 class="card-title mb-3">Informations du profil</h5>
-                <p class="text-muted small">Mettez à jour votre nom et votre adresse email.</p>
+    <div style="background:#fff; border-radius:16px; border:1px solid #f1f5f9; box-shadow:0 1px 3px rgba(0,0,0,.04); padding:24px;">
+        <h5 style="font-weight:700; color:#1e293b; font-size:15px; margin:0 0 4px;">Informations du profil</h5>
+        <p style="font-size:13px; color:#64748b; margin:0 0 20px;">Mettez à jour votre nom et votre adresse email.</p>
 
-                <form method="post" action="{{ route('profile.update') }}">
-                    @csrf
-                    @method('patch')
-
-                    <div class="mb-3">
-                        <label for="name" class="form-label fw-bold">Nom</label>
-                        <input id="name" name="name" type="text"
-                               class="form-control @error('name') is-invalid @enderror"
-                               value="{{ old('name', $user->name) }}" required autofocus>
-                        @error('name') <div class="invalid-feedback">{{ $message }}</div> @enderror
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="email" class="form-label fw-bold">Email</label>
-                        <input id="email" name="email" type="email"
-                               class="form-control @error('email') is-invalid @enderror"
-                               value="{{ old('email', $user->email) }}" required>
-                        @error('email') <div class="invalid-feedback">{{ $message }}</div> @enderror
-                    </div>
-
-                    @if ($user instanceof \Illuminate\Contracts\Auth\MustVerifyEmail && ! $user->hasVerifiedEmail())
-                        <div class="alert alert-warning small">
-                            Votre adresse email n'est pas vérifiée.
-                            <button form="send-verification" class="btn btn-link p-0 small">
-                                Cliquez ici pour renvoyer l'email de vérification.
-                            </button>
-                        </div>
-                        @if (session('status') === 'verification-link-sent')
-                            <div class="alert alert-success small">
-                                Un nouveau lien de vérification a été envoyé.
-                            </div>
-                        @endif
-                    @endif
-
-                    <button type="submit" class="btn btn-primary">
-                        <i class="bi bi-check-lg"></i> Enregistrer
-                    </button>
-
-                    @if (session('status') === 'profile-updated')
-                        <span class="text-success ms-2">
-                            <i class="bi bi-check-circle"></i> Enregistré !
-                        </span>
-                    @endif
-                </form>
+        <form method="POST" action="{{ route('profile.update') }}" style="display:flex; flex-direction:column; gap:16px;">
+            @csrf @method('patch')
+            <div>
+                <label style="display:block; font-size:12px; font-weight:500; color:#64748b; margin-bottom:6px;">Nom</label>
+                <input type="text" name="name" value="{{ old('name', $user->name) }}" required
+                       style="width:100%; padding:10px 14px; border:1px solid #e2e8f0; border-radius:10px; font-size:14px; outline:none; box-sizing:border-box;">
+                @error('name')<p style="color:#dc2626; font-size:12px; margin:4px 0 0;">{{ $message }}</p>@enderror
             </div>
-        </div>
+            <div>
+                <label style="display:block; font-size:12px; font-weight:500; color:#64748b; margin-bottom:6px;">Email</label>
+                <input type="email" name="email" value="{{ old('email', $user->email) }}" required
+                       style="width:100%; padding:10px 14px; border:1px solid #e2e8f0; border-radius:10px; font-size:14px; outline:none; box-sizing:border-box;">
+                @error('email')<p style="color:#dc2626; font-size:12px; margin:4px 0 0;">{{ $message }}</p>@enderror
+            </div>
+            @if(session('status') === 'profile-updated')
+            <p style="color:#16a34a; font-size:13px; margin:0;"><i class="fa-solid fa-check" style="margin-right:4px;"></i> Enregistré !</p>
+            @endif
+            <div style="display:flex; justify-content:flex-end; padding-top:12px; border-top:1px solid #f1f5f9;">
+                <button type="submit"
+                        style="background:#1e40af; color:#fff; border:none; border-radius:10px; padding:9px 20px; font-size:13px; font-weight:500; cursor:pointer; display:inline-flex; align-items:center; gap:8px;">
+                    <i class="fa-solid fa-floppy-disk"></i> Enregistrer
+                </button>
+            </div>
+        </form>
     </div>
 
-    {{-- Mise à jour du mot de passe --}}
-    <div class="col-md-6">
-        <div class="card">
-            <div class="card-body p-4">
-                <h5 class="card-title mb-3">Mettre à jour le mot de passe</h5>
-                <p class="text-muted small">Utilisez un mot de passe long et aléatoire pour rester en sécurité.</p>
+    {{-- Mot de passe --}}
+    <div style="background:#fff; border-radius:16px; border:1px solid #f1f5f9; box-shadow:0 1px 3px rgba(0,0,0,.04); padding:24px;">
+        <h5 style="font-weight:700; color:#1e293b; font-size:15px; margin:0 0 4px;">Mettre à jour le mot de passe</h5>
+        <p style="font-size:13px; color:#64748b; margin:0 0 20px;">Utilisez un mot de passe long et aléatoire.</p>
 
-                <form method="post" action="{{ route('password.update') }}">
-                    @csrf
-                    @method('put')
-
-                    <div class="mb-3">
-                        <label for="current_password" class="form-label fw-bold">Mot de passe actuel</label>
-                        <input id="current_password" name="current_password" type="password"
-                               class="form-control @error('current_password', 'updatePassword') is-invalid @enderror" autocomplete="current-password">
-                        @error('current_password', 'updatePassword') <div class="invalid-feedback">{{ $message }}</div> @enderror
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="password" class="form-label fw-bold">Nouveau mot de passe</label>
-                        <input id="password" name="password" type="password"
-                               class="form-control @error('password', 'updatePassword') is-invalid @enderror" autocomplete="new-password">
-                        @error('password', 'updatePassword') <div class="invalid-feedback">{{ $message }}</div> @enderror
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="password_confirmation" class="form-label fw-bold">Confirmer le mot de passe</label>
-                        <input id="password_confirmation" name="password_confirmation" type="password"
-                               class="form-control @error('password_confirmation', 'updatePassword') is-invalid @enderror" autocomplete="new-password">
-                        @error('password_confirmation', 'updatePassword') <div class="invalid-feedback">{{ $message }}</div> @enderror
-                    </div>
-
-                    <button type="submit" class="btn btn-primary">
-                        <i class="bi bi-check-lg"></i> Enregistrer
-                    </button>
-
-                    @if (session('status') === 'password-updated')
-                        <span class="text-success ms-2">
-                            <i class="bi bi-check-circle"></i> Enregistré !
-                        </span>
-                    @endif
-                </form>
+        <form method="POST" action="{{ route('password.update') }}" style="display:flex; flex-direction:column; gap:16px;">
+            @csrf @method('put')
+            <div>
+                <label style="display:block; font-size:12px; font-weight:500; color:#64748b; margin-bottom:6px;">Mot de passe actuel</label>
+                <input type="password" name="current_password"
+                       style="width:100%; padding:10px 14px; border:1px solid #e2e8f0; border-radius:10px; font-size:14px; outline:none; box-sizing:border-box;">
+                @error('current_password', 'updatePassword')<p style="color:#dc2626; font-size:12px; margin:4px 0 0;">{{ $message }}</p>@enderror
             </div>
-        </div>
-
-        {{-- Suppression du compte --}}
-        <div class="card mt-3 border-danger">
-            <div class="card-body p-4">
-                <h5 class="card-title text-danger mb-3">Supprimer le compte</h5>
-                <p class="text-muted small">Une fois supprimé, toutes vos données seront définitivement perdues.</p>
-
-                <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteAccountModal">
-                    <i class="bi bi-trash"></i> Supprimer mon compte
+            <div>
+                <label style="display:block; font-size:12px; font-weight:500; color:#64748b; margin-bottom:6px;">Nouveau mot de passe</label>
+                <input type="password" name="password"
+                       style="width:100%; padding:10px 14px; border:1px solid #e2e8f0; border-radius:10px; font-size:14px; outline:none; box-sizing:border-box;">
+                @error('password', 'updatePassword')<p style="color:#dc2626; font-size:12px; margin:4px 0 0;">{{ $message }}</p>@enderror
+            </div>
+            <div>
+                <label style="display:block; font-size:12px; font-weight:500; color:#64748b; margin-bottom:6px;">Confirmer le mot de passe</label>
+                <input type="password" name="password_confirmation"
+                       style="width:100%; padding:10px 14px; border:1px solid #e2e8f0; border-radius:10px; font-size:14px; outline:none; box-sizing:border-box;">
+            </div>
+            @if(session('status') === 'password-updated')
+            <p style="color:#16a34a; font-size:13px; margin:0;"><i class="fa-solid fa-check" style="margin-right:4px;"></i> Enregistré !</p>
+            @endif
+            <div style="display:flex; justify-content:flex-end; padding-top:12px; border-top:1px solid #f1f5f9;">
+                <button type="submit"
+                        style="background:#1e40af; color:#fff; border:none; border-radius:10px; padding:9px 20px; font-size:13px; font-weight:500; cursor:pointer; display:inline-flex; align-items:center; gap:8px;">
+                    <i class="fa-solid fa-floppy-disk"></i> Enregistrer
                 </button>
-
-                <div class="modal fade" id="deleteAccountModal" tabindex="-1">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <form method="post" action="{{ route('profile.destroy') }}">
-                                @csrf
-                                @method('delete')
-                                <div class="modal-header">
-                                    <h5 class="modal-title">Confirmer la suppression</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                                </div>
-                                <div class="modal-body">
-                                    <p>Êtes-vous sûr de vouloir supprimer votre compte ? Cette action est irréversible.</p>
-                                    <label class="form-label fw-bold">Mot de passe</label>
-                                    <input type="password" name="password" class="form-control @error('password', 'userDeletion') is-invalid @enderror">
-                                    @error('password', 'userDeletion') <div class="invalid-feedback">{{ $message }}</div> @enderror
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-                                    <button type="submit" class="btn btn-danger">Supprimer mon compte</button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
             </div>
+        </form>
+    </div>
+
+    {{-- Suppression du compte --}}
+    <div style="background:#fff; border-radius:16px; border:1px solid #fecaca; box-shadow:0 1px 3px rgba(0,0,0,.04); padding:24px;" x-data="{ open: false }">
+        <h5 style="font-weight:700; color:#dc2626; font-size:15px; margin:0 0 4px;">Supprimer le compte</h5>
+        <p style="font-size:13px; color:#64748b; margin:0 0 16px;">Une fois supprimé, toutes vos données seront définitivement perdues.</p>
+        <button @click="open = true"
+                style="background:#fef2f2; color:#dc2626; border:1px solid #fecaca; border-radius:10px; padding:9px 18px; font-size:13px; font-weight:500; cursor:pointer; display:inline-flex; align-items:center; gap:8px;">
+            <i class="fa-solid fa-trash"></i> Supprimer mon compte
+        </button>
+
+        <div x-show="open" style="margin-top:16px; padding:16px; background:#fef2f2; border-radius:12px; border:1px solid #fecaca;">
+            <form method="POST" action="{{ route('profile.destroy') }}" style="display:flex; flex-direction:column; gap:12px;">
+                @csrf @method('delete')
+                <p style="font-size:13px; font-weight:600; color:#dc2626; margin:0;">Êtes-vous sûr ? Cette action est irréversible.</p>
+                <div>
+                    <label style="display:block; font-size:12px; font-weight:500; color:#64748b; margin-bottom:6px;">Mot de passe</label>
+                    <input type="password" name="password"
+                           style="width:100%; padding:10px 14px; border:1px solid #fecaca; border-radius:10px; font-size:14px; outline:none; box-sizing:border-box;">
+                    @error('password', 'userDeletion')<p style="color:#dc2626; font-size:12px; margin:4px 0 0;">{{ $message }}</p>@enderror
+                </div>
+                <div style="display:flex; gap:8px;">
+                    <button type="submit"
+                            style="background:#dc2626; color:#fff; border:none; border-radius:10px; padding:9px 18px; font-size:13px; font-weight:500; cursor:pointer; display:inline-flex; align-items:center; gap:8px;">
+                        <i class="fa-solid fa-trash"></i> Confirmer la suppression
+                    </button>
+                    <button type="button" @click="open = false"
+                            style="background:#f8fafc; color:#475569; border:1px solid #e2e8f0; border-radius:10px; padding:9px 18px; font-size:13px; font-weight:500; cursor:pointer;">
+                        Annuler
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 
 </div>
-
-<form id="send-verification" method="post" action="{{ route('verification.send') }}">
-    @csrf
-</form>
+<form id="send-verification" method="POST" action="{{ route('verification.send') }}">@csrf</form>
 @endsection

@@ -1,75 +1,89 @@
 @extends('layouts.app')
+@section('title', 'Nouveau procès-verbal')
 
 @section('content')
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h2><i class="bi bi-file-earmark-plus text-primary"></i> Créer un PV</h2>
-    <a href="{{ route('pvs.index') }}" class="btn btn-outline-secondary">
-        <i class="bi bi-arrow-left"></i> Retour
-    </a>
-</div>
+<div style="max-width:700px;">
 
-<div class="card">
-    <div class="card-body p-4">
-        <form action="{{ route('pvs.store') }}" method="POST">
+    <a href="{{ route('pvs.index') }}"
+       style="display:inline-flex; align-items:center; gap:8px; background:#f8fafc; color:#475569; border:1px solid #e2e8f0; border-radius:10px; padding:8px 16px; font-size:13px; font-weight:500; text-decoration:none; margin-bottom:20px;">
+        <i class="fa-solid fa-arrow-left"></i> Retour
+    </a>
+
+    <div style="background:#fff; border-radius:16px; border:1px solid #f1f5f9; box-shadow:0 1px 3px rgba(0,0,0,.04); padding:28px;">
+
+        <h2 style="font-family:'Syne',sans-serif; font-weight:700; color:#1e293b; font-size:17px; margin:0 0 20px; padding-bottom:16px; border-bottom:1px solid #f1f5f9;">
+            <i class="fa-solid fa-file-circle-plus" style="color:#1e40af; margin-right:8px;"></i>Nouveau procès-verbal
+        </h2>
+
+        <form action="{{ route('pvs.store') }}" method="POST"
+              style="display:flex; flex-direction:column; gap:18px;">
             @csrf
-            <div class="row g-3">
-                <div class="col-md-12">
-                    <label class="form-label fw-bold">Soutenance concernée</label>
-                    <select name="soutenance_id" class="form-select @error('soutenance_id') is-invalid @enderror">
-                        <option value="">-- Choisir une soutenance --</option>
-                        @foreach($soutenances as $s)
-                            <option value="{{ $s->id }}" {{ old('soutenance_id') == $s->id ? 'selected' : '' }}>
-                                {{ $s->etudiant_prenom }} {{ $s->etudiant_nom }} — {{ Str::limit($s->titre_memoire, 50) }}
-                            </option>
+
+            <div>
+                <label style="display:block; font-size:12px; font-weight:500; color:#64748b; margin-bottom:6px;">Soutenance <span style="color:#dc2626;">*</span></label>
+                <select name="soutenance_id" required
+                        style="width:100%; padding:10px 14px; border:1px solid #e2e8f0; border-radius:10px; font-size:14px; outline:none; box-sizing:border-box; color:#475569;">
+                    <option value="">Sélectionner une soutenance...</option>
+                    @foreach($soutenances as $s)
+                    <option value="{{ $s->id }}" {{ old('soutenance_id') == $s->id ? 'selected' : '' }}>
+                        {{ $s->etudiant_prenom }} {{ $s->etudiant_nom }} — {{ \Carbon\Carbon::parse($s->date_soutenance)->format('d/m/Y') }}
+                    </option>
+                    @endforeach
+                </select>
+                @error('soutenance_id')<p style="color:#dc2626; font-size:12px; margin:4px 0 0;">{{ $message }}</p>@enderror
+            </div>
+
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+                <div>
+                    <label style="display:block; font-size:12px; font-weight:500; color:#64748b; margin-bottom:6px;">Note /20 <span style="color:#dc2626;">*</span></label>
+                    <input type="number" name="note" value="{{ old('note') }}" required
+                           step="0.5" min="0" max="20" placeholder="Ex: 14.5"
+                           style="width:100%; padding:10px 14px; border:1px solid #e2e8f0; border-radius:10px; font-size:14px; outline:none; box-sizing:border-box;">
+                    @error('note')<p style="color:#dc2626; font-size:12px; margin:4px 0 0;">{{ $message }}</p>@enderror
+                </div>
+                <div>
+                    <label style="display:block; font-size:12px; font-weight:500; color:#64748b; margin-bottom:6px;">Mention <span style="color:#dc2626;">*</span></label>
+                    <select name="mention" required
+                            style="width:100%; padding:10px 14px; border:1px solid #e2e8f0; border-radius:10px; font-size:14px; outline:none; box-sizing:border-box; color:#475569;">
+                        @foreach(['Passable','Assez Bien','Bien','Très Bien'] as $m)
+                        <option value="{{ $m }}" {{ old('mention') === $m ? 'selected' : '' }}>{{ $m }}</option>
                         @endforeach
                     </select>
-                    @error('soutenance_id') <div class="invalid-feedback">{{ $message }}</div> @enderror
                 </div>
-                <div class="col-md-4">
-                    <label class="form-label fw-bold">Note (/20)</label>
-                    <input type="number" name="note" step="0.25" min="0" max="20"
-                           class="form-control @error('note') is-invalid @enderror"
-                           value="{{ old('note') }}" placeholder="Ex: 14.50">
-                    @error('note') <div class="invalid-feedback">{{ $message }}</div> @enderror
-                </div>
-                <div class="col-md-4">
-                    <label class="form-label fw-bold">Mention</label>
-                    <select name="mention" class="form-select @error('mention') is-invalid @enderror" id="mention">
-                        <option value="">-- Choisir --</option>
-                        <option value="Passable" {{ old('mention') == 'Passable' ? 'selected' : '' }}>Passable (10-12)</option>
-                        <option value="Assez Bien" {{ old('mention') == 'Assez Bien' ? 'selected' : '' }}>Assez Bien (12-14)</option>
-                        <option value="Bien" {{ old('mention') == 'Bien' ? 'selected' : '' }}>Bien (14-16)</option>
-                        <option value="Très Bien" {{ old('mention') == 'Très Bien' ? 'selected' : '' }}>Très Bien (16-20)</option>
-                    </select>
-                    @error('mention') <div class="invalid-feedback">{{ $message }}</div> @enderror
-                </div>
-                <div class="col-md-4">
-                    <label class="form-label fw-bold">Décision</label>
-                    <select name="decision" class="form-select @error('decision') is-invalid @enderror">
-                        <option value="Admis" {{ old('decision') == 'Admis' ? 'selected' : '' }}>Admis</option>
-                        <option value="Ajourné" {{ old('decision') == 'Ajourné' ? 'selected' : '' }}>Ajourné</option>
-                        <option value="Admis avec réserves" {{ old('decision') == 'Admis avec réserves' ? 'selected' : '' }}>Admis avec réserves</option>
-                    </select>
-                    @error('decision') <div class="invalid-feedback">{{ $message }}</div> @enderror
-                </div>
-                <div class="col-md-4">
-                    <label class="form-label fw-bold">Date du PV</label>
-                    <input type="date" name="date_pv" class="form-control @error('date_pv') is-invalid @enderror"
-                           value="{{ old('date_pv', date('Y-m-d')) }}">
-                    @error('date_pv') <div class="invalid-feedback">{{ $message }}</div> @enderror
-                </div>
-                <div class="col-md-12">
-                    <label class="form-label fw-bold">Appréciation <span class="text-muted">(optionnel)</span></label>
-                    <textarea name="appreciation" rows="3"
-                              class="form-control @error('appreciation') is-invalid @enderror"
-                              placeholder="Commentaires du jury sur le travail de l'étudiant...">{{ old('appreciation') }}</textarea>
-                    @error('appreciation') <div class="invalid-feedback">{{ $message }}</div> @enderror
-                </div>
-                <div class="col-12 mt-2">
-                    <button type="submit" class="btn btn-primary px-5">
-                        <i class="bi bi-check-lg"></i> Enregistrer le PV
-                    </button>
-                </div>
+            </div>
+
+            <div>
+                <label style="display:block; font-size:12px; font-weight:500; color:#64748b; margin-bottom:6px;">Décision <span style="color:#dc2626;">*</span></label>
+                <select name="decision" required
+                        style="width:100%; padding:10px 14px; border:1px solid #e2e8f0; border-radius:10px; font-size:14px; outline:none; box-sizing:border-box; color:#475569;">
+                    @foreach(['Admis','Ajourné','Admis avec réserves'] as $d)
+                    <option value="{{ $d }}" {{ old('decision') === $d ? 'selected' : '' }}>{{ $d }}</option>
+                    @endforeach
+                </select>
+            </div>
+
+            <div>
+                <label style="display:block; font-size:12px; font-weight:500; color:#64748b; margin-bottom:6px;">Appréciation</label>
+                <textarea name="appreciation" rows="4"
+                          placeholder="Appréciation générale du jury..."
+                          style="width:100%; padding:10px 14px; border:1px solid #e2e8f0; border-radius:10px; font-size:14px; outline:none; box-sizing:border-box; resize:none;">{{ old('appreciation') }}</textarea>
+            </div>
+
+            <div>
+                <label style="display:block; font-size:12px; font-weight:500; color:#64748b; margin-bottom:6px;">Date du PV <span style="color:#dc2626;">*</span></label>
+                <input type="date" name="date_pv" value="{{ old('date_pv', date('Y-m-d')) }}" required
+                       style="width:100%; padding:10px 14px; border:1px solid #e2e8f0; border-radius:10px; font-size:14px; outline:none; box-sizing:border-box;">
+            </div>
+
+            <div style="display:flex; justify-content:flex-end; gap:10px; padding-top:16px; border-top:1px solid #f1f5f9;">
+                <a href="{{ route('pvs.index') }}"
+                   style="background:#f8fafc; color:#475569; border:1px solid #e2e8f0; border-radius:10px; padding:10px 20px; font-size:13px; font-weight:500; text-decoration:none;">
+                    Annuler
+                </a>
+                <button type="submit"
+                        style="background:#1e40af; color:#fff; border:none; border-radius:10px; padding:10px 20px; font-size:13px; font-weight:500; cursor:pointer; display:inline-flex; align-items:center; gap:8px;">
+                    <i class="fa-solid fa-file-circle-plus"></i> Créer le PV
+                </button>
             </div>
         </form>
     </div>

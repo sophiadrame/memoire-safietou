@@ -15,7 +15,7 @@ return new class extends Migration
             $table->string('prenom');
             $table->string('email')->nullable();
             $table->string('telephone')->nullable();
-            $table->enum('role', ['président', 'rapporteur', 'examinateur'])->default('examinateur');
+            $table->string('role')->default('examinateur');
             $table->string('grade')->nullable();
             $table->timestamps();
         });

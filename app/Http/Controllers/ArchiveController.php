@@ -11,7 +11,15 @@ class ArchiveController extends Controller
 {
     public function index(Request $request)
     {
+        $user = auth()->user();
         $query = Archive::with('soutenance');
+
+        if ($user->isEtudiant()) {
+            $query->whereHas('soutenance', fn ($q) => $q->where('etudiant_id', $user->id));
+        } elseif ($user->isEnseignant()) {
+            $query->whereHas('soutenance.juries', fn ($q) => $q->where('user_id', $user->id));
+        }
+        // admin : aucun filtre, voit tout
 
         if ($request->filled('annee')) {
             $query->where('annee_universitaire', $request->annee);
@@ -60,6 +68,14 @@ class ArchiveController extends Controller
 
     public function download(Archive $archive)
     {
+        $user = auth()->user();
+        if ($user->isEtudiant()) {
+            abort_unless($archive->soutenance->etudiant_id === $user->id, 403);
+        } elseif ($user->isEnseignant()) {
+            $autorise = $archive->soutenance->juries()->where('user_id', $user->id)->exists();
+            abort_unless($autorise, 403);
+        }
+
         return Storage::disk('public')->download($archive->chemin_fichier, $archive->nom_fichier);
     }
 

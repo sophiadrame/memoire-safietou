@@ -10,20 +10,33 @@ class JuryController extends Controller
 {
     public function index()
     {
-        $juries = Jury::with('soutenance')->orderBy('created_at', 'desc')->get();
+        $user = auth()->user();
+
+        $query = Jury::with('soutenance')->orderBy('created_at', 'desc');
+
+        if ($user->isEtudiant()) {
+            $query->whereHas('soutenance', fn ($q) => $q->where('etudiant_id', $user->id));
+        } elseif ($user->isEnseignant()) {
+            $query->where('user_id', $user->id);
+        }
+        // admin : aucun filtre, voit tout
+
+        $juries = $query->get();
         return view('juries.index', compact('juries'));
     }
 
     public function create()
     {
         $soutenances = Soutenance::orderBy('date_soutenance')->get();
-        return view('juries.create', compact('soutenances'));
+        $enseignants = \App\Models\User::where('role', 'enseignant')->orderBy('name')->get();
+        return view('juries.create', compact('soutenances', 'enseignants'));
     }
 
     public function store(Request $request)
     {
         $request->validate([
             'soutenance_id' => 'required|exists:soutenances,id',
+            'user_id'       => 'nullable|exists:users,id',
             'nom'           => 'required|string|max:100',
             'prenom'        => 'required|string|max:100',
             'email'         => 'nullable|email|max:150',
@@ -40,7 +53,8 @@ class JuryController extends Controller
     public function edit(Jury $jury)
     {
         $soutenances = Soutenance::orderBy('date_soutenance')->get();
-        return view('juries.edit', compact('jury', 'soutenances'));
+        $enseignants = \App\Models\User::where('role', 'enseignant')->orderBy('name')->get();
+        return view('juries.edit', compact('jury', 'soutenances', 'enseignants'));
     }
 
     public function update(Request $request, Jury $jury)
