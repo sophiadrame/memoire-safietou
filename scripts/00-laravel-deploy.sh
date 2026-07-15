@@ -12,3 +12,5 @@ php artisan view:cache
 php artisan storage:link
 echo "Running migrations"
 php artisan migrate --force
+echo "Running seeders"
+php artisan db:seed --force
